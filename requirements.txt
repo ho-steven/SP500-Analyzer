@@ -4,5 +4,4 @@ pandas
 yfinance
 matplotlib
 beautifulsoup4
-urllib
 plotly
