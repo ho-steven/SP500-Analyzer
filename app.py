@@ -3,8 +3,6 @@ from multiapp import MultiApp
 from apps import home, sp500 # import your app modules here
 
 
-
-
 app = MultiApp()
 
 # Add all your application here
