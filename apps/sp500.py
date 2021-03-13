@@ -4,7 +4,7 @@ import numpy as np
 import yfinance as yf
 from datetime import datetime, date
 import matplotlib.pyplot as plt
-import ta-lib 
+import talib 
 import ta
 import numpy as np
 import matplotlib.ticker as mticker
