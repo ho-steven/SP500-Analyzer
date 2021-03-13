@@ -182,8 +182,8 @@ def app():
 
     lib = CDLL("/home/appuser/lib/libta_lib.so.0")
     # import library
-    import talib
-        st.write("""
+import talib
+    st.write("""
     # S&P 500 Stock Analyzer
     Shown below are the **Fundamentals**, **Moving Average Crossovers**, **Bollinger Bands**, **MACD's**, **Relative Strength Indexes** of your selected stock!
     """)
