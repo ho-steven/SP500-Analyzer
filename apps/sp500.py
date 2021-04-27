@@ -16,6 +16,8 @@ import plotly.graph_objects as go
 yf.pdr_override()
 from pytrends.request import TrendReq
 import streamlit.components.v1 as components
+import nltk
+nltk.downloader.download('vader_lexicon')
 
 
     
@@ -399,7 +401,7 @@ def app():
 
     HtmlFile = open("report.html", 'r', encoding='utf-8')
     source_code = HtmlFile.read() 
-    print(source_code)
+    #print(source_code)
     components.html(source_code, height = 7500)
 
     st.write("Disclaimer: The data are collected from Google, Yahoo Finance and Finviz")
