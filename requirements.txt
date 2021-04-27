@@ -8,3 +8,4 @@ plotly
 pytrends
 quantstats
 nltk
+pandas-datareader
