@@ -14,6 +14,8 @@ from bs4 import BeautifulSoup as soup
 from urllib.request import Request, urlopen
 import plotly.graph_objects as go
 yf.pdr_override()
+from pytrends.request import TrendReq
+import streamlit.components.v1 as components
 
 
     
@@ -93,6 +95,109 @@ def get_news(symbol):
 
     except Exception as e:
         return e
+        
+        
+def news_sentiment(symbol):
+    # Import libraries
+    import pandas as pd
+    from bs4 import BeautifulSoup
+    import matplotlib.pyplot as plt
+    from urllib.request import urlopen, Request
+    from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+    # Parameters 
+    n = 5 #the # of article headlines displayed per ticker
+    tickers = [symbol]
+
+    # Get Data
+    finwiz_url = 'https://finviz.com/quote.ashx?t='
+    news_tables = {}
+
+    for ticker in tickers:
+        url = finwiz_url + ticker
+        req = Request(url=url,headers={'user-agent': 'my-app/0.0.1'}) 
+        resp = urlopen(req)    
+        html = BeautifulSoup(resp, features="lxml")
+        news_table = html.find(id='news-table')
+        news_tables[ticker] = news_table
+
+    try:
+        for ticker in tickers:
+            df = news_tables[ticker]
+            df_tr = df.findAll('tr')
+        
+            # print ('\n')
+            # print ('Recent News Headlines for {}: '.format(ticker))
+            
+            for i, table_row in enumerate(df_tr):
+                a_text = table_row.a.text
+                td_text = table_row.td.text
+                td_text = td_text.strip()
+                # print(a_text,'(',td_text,')')
+                if i == n-1:
+                    break
+    except KeyError:
+        pass
+
+    # Iterate through the news
+    parsed_news = []
+    for file_name, news_table in news_tables.items():
+        for x in news_table.findAll('tr'):
+            text = x.a.get_text() 
+            date_scrape = x.td.text.split()
+
+            if len(date_scrape) == 1:
+                time = date_scrape[0]
+                
+            else:
+                date = date_scrape[0]
+                time = date_scrape[1]
+
+            ticker = file_name.split('_')[0]
+            
+            parsed_news.append([ticker, date, time, text])
+            
+    # Sentiment Analysis
+    analyzer = SentimentIntensityAnalyzer()
+
+    columns = ['Ticker', 'Date', 'Time', 'Headline']
+    news = pd.DataFrame(parsed_news, columns=columns)
+    scores = news['Headline'].apply(analyzer.polarity_scores).tolist()
+
+    df_scores = pd.DataFrame(scores)
+    news = news.join(df_scores, rsuffix='_right')
+
+
+    # View Data 
+    news['Date'] = pd.to_datetime(news.Date).dt.date
+
+    unique_ticker = news['Ticker'].unique().tolist()
+    news_dict = {name: news.loc[news['Ticker'] == name] for name in unique_ticker}
+
+    values = []
+    for ticker in tickers: 
+        dataframe = news_dict[ticker]
+        dataframe = dataframe.set_index('Ticker')
+        # dataframe = dataframe.drop(columns = ['Headline'])
+        # print ('\n')
+        # print (dataframe.head())
+        
+        mean = round(dataframe['compound'].mean(), 2)
+        values.append(mean)
+        
+    # df = pd.DataFrame(list(zip(tickers, values)), columns =['Ticker', 'Mean Sentiment']) 
+    # df = df.set_index('Ticker')
+    # df = df.sort_values('Mean Sentiment', ascending=False)
+
+    return dataframe
+
+
+  
+    
+    # print ('\n')
+    # print (df)
+
+
 
 def get_insider(symbol):
     try:
@@ -145,6 +250,46 @@ def get_analyst_price_targets(symbol):
         return e
 
 
+def get_google_trends(symbol):
+    # set US timezone
+    pytrends = TrendReq(hl = 'en-US', tz = 360)
+
+    pytrends.trending_searches(pn = 'united_states')
+
+    # kw_list  keyworld list 
+    kw_list = [symbol + ' stock']
+
+    # 然後就可以透過 build_payload 建立查詢作業，再用 interest_over_time() 呈現數據
+    # 其中的　timeframe 參數很重要！它會改變你的數據格式
+    #  填入 'all' 就是全期資料，資料會以月頻率更新；
+    #  填入 'today 5-y' 就是至今的五年，只能設定 5 年，資料會以週頻率更新；
+    #  填入 'today 3-m' 就是至今的三個月，只能設定 1,2,3 月，資料會以日頻率更新；
+    #  填入 'now 7-d' 就是至今的七天，只能設定 1,7 天，資料會以小時頻率更新；
+    #  填入 'now 1-H' 就是至今的一小時，只能設定 1,4 小時，資料會以每分鐘頻率更新；
+    #  填入 '2015-01-01 2019-01-01' 就是 2015 年初至 2019 年初
+    pytrends.build_payload(kw_list, timeframe = 'today 3-m')
+    pytrends.interest_over_time()
+
+    trend_data=pytrends.interest_over_time()
+    return trend_data
+
+
+def stock_report(symbol):
+    import quantstats as qs
+
+    # extend pandas functionality with metrics, etc.
+    qs.extend_pandas()
+
+    # fetch the daily returns for a stock
+    stock = qs.utils.download_returns('A')
+    #qs.core.plot_returns_bars(stock, "SPY")
+    qs.reports.html(stock, "SPY", output="report.html")
+
+    
+
+
+
+
 
 
 def app():
@@ -152,8 +297,11 @@ def app():
     
     st.write("""
     # S&P 500 Stock Analyzer
-    Shown below are the **Fundamentals**, **Moving Average Crossovers**, **Bollinger Bands**, **MACD's**, **Relative Strength Indexes** of your selected stock!
+    Shown below are the **Fundamentals**, **News Sentiment**, **Bollinger Bands**, **Analyst Ratings**, **Google Search Trends** and **Comprehensive Report (Compared with SPY as a whole as benchmark)** of your selected stock!
+       
     """)
+
+
     
     st.sidebar.header('User Input Parameters')
     
@@ -166,7 +314,8 @@ def app():
     end = pd.to_datetime(end)
     company_name = get_symbol(symbol.upper())
         
-
+    st.header(f"""** {company_name} **""")
+    
     # Read data 
     data = yf.download(symbol,start,end)
     
@@ -222,6 +371,9 @@ def app():
     st.write("**Latest News: **")
     st.table(get_news(symbol).head(5))
 
+    # ## News Sentiment Analysis
+    st.write("**News Sentiment Analysis: **")
+    st.table(news_sentiment(symbol).head(5))
 
     # ## Recent Insider Trades
     st.write("**Recent Insider Trades: **")
@@ -230,9 +382,26 @@ def app():
     # ## Recent Insider Trades
     st.write("**Analyst Ratings: **")
     st.table(get_analyst_price_targets(symbol).head(5))
+    
+    # ## Past 3 months Google Search Trends
+    st.write("**Google Search Trends: **")
+    st.line_chart(get_google_trends(symbol))    
 
+    st.write("Generating comprehensive stock report...")
+    st.write("**please wait for some time... **")
+    stock_report(symbol)
+    # ## Stock report
 
+    st.write(f"""
+    # **{company_name} Stock Report**""")
+    
+    #st.header(company_name + " Stock Report")
 
-    st.write("Disclaimer: The data are collected from Yahoo Finance and Finviz")
+    HtmlFile = open("report.html", 'r', encoding='utf-8')
+    source_code = HtmlFile.read() 
+    print(source_code)
+    components.html(source_code, height = 7500)
+
+    st.write("Disclaimer: The data are collected from Google, Yahoo Finance and Finviz")
 
 
