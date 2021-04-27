@@ -5,4 +5,4 @@ yfinance
 matplotlib
 beautifulsoup4
 plotly
-
+pytrends
