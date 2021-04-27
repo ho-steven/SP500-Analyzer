@@ -9,3 +9,4 @@ pytrends
 quantstats
 nltk
 pandas-datareader
+sklearn
