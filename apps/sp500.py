@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import yfinance as yf
@@ -15,7 +16,6 @@ from urllib.request import Request, urlopen
 import plotly.graph_objects as go
 yf.pdr_override()
 from pytrends.request import TrendReq
-import streamlit.components.v1 as components
 import nltk
 nltk.downloader.download('vader_lexicon')
 
@@ -202,9 +202,7 @@ def news_sentiment(symbol):
 
 
 def get_insider(symbol):
-    try:
-        #symbol, start, end = user_input_features()
-        
+    try:        
 
         url2 = ("http://finviz.com/quote.ashx?t=" + symbol.lower())
         req = Request(url2, headers={'User-Agent': 'Mozilla/5.0'})
@@ -314,9 +312,9 @@ def app():
     symbol, start, end = user_input_features()
     start = pd.to_datetime(start)
     end = pd.to_datetime(end)
-    company_name = get_symbol(symbol.upper())
+    #symbol = get_symbol(symbol.upper())
         
-    st.header(f"""** {company_name} **""")
+    st.header(f"""** {symbol} **""")
     
     # Read data 
     data = yf.download(symbol,start,end)
@@ -330,7 +328,7 @@ def app():
 
     # Plot
     st.header(f"""
-              Simple Moving Average vs. Exponential Moving Average\n {company_name}
+              Simple Moving Average vs. Exponential Moving Average\n {symbol}
               """)
     st.line_chart(data[['Adj Close','SMA','EMA']])
 
@@ -339,7 +337,7 @@ def app():
 
     # Plot
     st.header(f"""
-              Bollinger Bands\n {company_name}
+              Bollinger Bands\n {symbol}
               """)
     st.line_chart(data[['Adj Close','upper_band','middle_band','lower_band']])
 
@@ -349,7 +347,7 @@ def app():
 
     # Plot
     st.header(f"""
-              Moving Average Convergence Divergence\n {company_name}
+              Moving Average Convergence Divergence\n {symbol}
               """)
     st.line_chart(data[['macd','macdsignal']])
 
@@ -359,7 +357,7 @@ def app():
 
     # Plot
     st.header(f"""
-              Relative Strength Index\n {company_name}
+              Relative Strength Index\n {symbol}
               """)
     st.line_chart(data['RSI'])
 
@@ -381,7 +379,7 @@ def app():
     st.write("**Recent Insider Trades: **")
     st.table(get_insider(symbol).head(5))
 
-    # ## Recent Insider Trades
+    # ## Analyst Ratings
     st.write("**Analyst Ratings: **")
     st.table(get_analyst_price_targets(symbol).head(5))
     
@@ -395,9 +393,9 @@ def app():
     # ## Stock report
 
     st.write(f"""
-    # **{company_name} Stock Report**""")
+    # **{symbol} Stock Report**""")
     
-    #st.header(company_name + " Stock Report")
+    #st.header(symbol + " Stock Report")
 
     HtmlFile = open("report.html", 'r', encoding='utf-8')
     source_code = HtmlFile.read() 
