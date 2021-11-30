@@ -30,11 +30,15 @@ def user_input_features():
 
 
 def get_symbol(symbol):
-    url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={}&region=1&lang=en".format(symbol)
-    result = requests.get(url).json()
-    for x in result['ResultSet']['Result']:
-        if x['symbol'] == symbol:
-            return x['name']
+    input_ticker = yf.Ticker(symbol)
+    company_name = input_ticker.info['longName']
+    return company_name
+    #url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={}&region=1&lang=en".format(symbol)
+
+    #result = requests.get(url).json()
+    #for x in result['ResultSet']['Result']:
+        #if x['symbol'] == symbol:
+            #return x['name']
 
 
 def get_fundamentals(symbol):
@@ -312,7 +316,7 @@ def app():
     symbol, start, end = user_input_features()
     start = pd.to_datetime(start)
     end = pd.to_datetime(end)
-    #symbol = get_symbol(symbol.upper())
+    symbol = get_symbol(symbol.upper())
         
     st.header(f"""** {symbol} **""")
     
