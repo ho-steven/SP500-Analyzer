@@ -396,9 +396,9 @@ def app():
     st.write("**Analyst Ratings: **")
     st.table(get_analyst_price_targets(symbol))
     
-    # ## Past 3 months Google Search Trends
-    st.write("**Google Search Trends: **")
-    st.line_chart(get_google_trends(symbol))    
+    # # ## Past 3 months Google Search Trends
+    # st.write("**Google Search Trends: **")
+    # st.line_chart(get_google_trends(symbol))    
 
     st.write("Generating comprehensive stock report...")
     st.write("**please wait for some time... **")
