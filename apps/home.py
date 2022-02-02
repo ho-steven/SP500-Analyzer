@@ -108,7 +108,7 @@ def cluster():
 
 
 def app():
-    st.title('ELEC7080')
+    st.title('HKU MSc(CompSc) Project Proof-of-concept using SP500')
 
     st.write("The Robo-advisor and Smart Investment Fund is a system that focuses on the analysis of the Standard & Poor's 500 (S&P 500) index. The system is composed of three essential parts, namely:")
 
