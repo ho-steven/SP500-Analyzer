@@ -10,3 +10,4 @@ quantstats
 nltk
 pandas-datareader
 sklearn
+finvizfinance
