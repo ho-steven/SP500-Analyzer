@@ -18,6 +18,8 @@ yf.pdr_override()
 from pytrends.request import TrendReq
 import nltk
 nltk.downloader.download('vader_lexicon')
+import time
+from finvizfinance.quote import finvizfinance
 
 
     
@@ -30,9 +32,11 @@ def user_input_features():
 
 
 def get_symbol(symbol):
-    input_ticker = yf.Ticker(symbol)
-    company_name = input_ticker.info['longName']
-    return company_name
+    stock = finvizfinance(symbol)
+    company_name = stock.ticker_fundament()
+    com = list(company_name.values())[0]
+    
+    return com
     #url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={}&region=1&lang=en".format(symbol)
 
     #result = requests.get(url).json()
@@ -285,9 +289,10 @@ def stock_report(symbol):
     qs.extend_pandas()
 
     # fetch the daily returns for a stock
-    stock = qs.utils.download_returns('A')
+    stock = qs.utils.download_returns(symbol)
     #qs.core.plot_returns_bars(stock, "SPY")
     qs.reports.html(stock, "SPY", output="report.html")
+
 
     
 
@@ -316,12 +321,16 @@ def app():
     symbol, start, end = user_input_features()
     start = pd.to_datetime(start)
     end = pd.to_datetime(end)
-    symbol = get_symbol(symbol.upper())
+    symbol1 = get_symbol(symbol.upper())
         
-    st.header(f"""** {symbol} **""")
-    
+    st.header(f"""** {symbol1} **""")
+
+    stock = finvizfinance(symbol.lower())
+    stock_chart = stock.ticker_charts()
+    st.image(stock_chart)
+
     # Read data 
-    data = yf.download(symbol,start,end)
+    data = yf.download(symbol,start,end,threads = False)
     
     # ## SMA and EMA
     #Simple Moving Average
@@ -385,7 +394,7 @@ def app():
 
     # ## Analyst Ratings
     st.write("**Analyst Ratings: **")
-    st.table(get_analyst_price_targets(symbol).head(5))
+    st.table(get_analyst_price_targets(symbol))
     
     # ## Past 3 months Google Search Trends
     st.write("**Google Search Trends: **")
@@ -404,7 +413,7 @@ def app():
     HtmlFile = open("report.html", 'r', encoding='utf-8')
     source_code = HtmlFile.read() 
     #print(source_code)
-    components.html(source_code, height = 7500)
+    components.html(source_code, height = 9000)
 
     st.write("Disclaimer: The data are collected from Google, Yahoo Finance and Finviz")
 
