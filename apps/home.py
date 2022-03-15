@@ -108,29 +108,37 @@ def cluster():
 
 
 def app():
-    st.title('HKU MSc(CompSc) Project Proof-of-concept using SP500')
-
-    st.write("The Robo-advisor and Smart Investment Fund is a system that focuses on the analysis of the Standard & Poor's 500 (S&P 500) index. The system is composed of three essential parts, namely:")
-
-    st.write("**1.	Pre-trade Analysis and Data Acquisition**")
-    st.write("**2.	Trade Execution with Trading strategies, Artificial Intelligence and Backtesting models**")
-    st.write("**3.	Post-trade Risk Management and Control**")
+    st.title('COMP7409 Machine Learning in Trading and Finance - Group K')
+    st.subheader("Project topic: Financial forecasting by Machine Learning")
     st.markdown("***")
-    st.write("**Our aim:**")
-    st.write("Using Machine Learning, Artificial Intelligence combine with statistic knowledge to generate the insight towards the market. We analyse our data, use AI techniques to construct trading strategies and perform backtesting to balance the risks and returns for investments.")
 
+    st.subheader("Project Objectives")
+    st.write("Stock price prediction and financial forecasting have been attractive research topics for both researchers and investors. Modern deep learning techniques such as long short-term memory (LSTM) using historical stock price data are popular in financial forecasting.")
+    st.write("This project has two main parts: First, to conduct literature review from previous research papers regarding the stock prediction model using LSTM neural network. For example, to summarize the research findings in terms of methodology, use of data sources and performance accuracy, additionally to identify macro-/micro-factors as underlying approach and limitations from existing models. Second part is to build a web dashboard stock screening platform using the web scraping techniques introduced in the lecture. This project has a significant contribution to literature as there was no research extensively specialized on building a hybrid, comprehensive and customized stock analyser with price prediction.")
     st.markdown("***")
-    st.write("**System Flow Diagram:**")
+
+    st.subheader("System Flow Diagram:")
     from PIL import Image
     image = Image.open('intro1.jpg')
     st.image(image)
     st.markdown("***")
-    st.write("**Development timeline:**")
-    image1 = Image.open('time.jpg')
-    st.image(image1)
+
+    st.subheader("Literature review")
+    st.write("LSTMs are widely used for sequence prediction problems and have proven to be effective as it can store important past information and forget those not required. We will summarize the findings from the selected papers which used LSTM neural network for financial forecasting, thus, to make assumptions and explore a methodology to examine the results and performance accuracy in terms of stock price movements supported by predefined macro- and micro-economic factors.")
+    st.markdown("**_D. Nelson, A. Pereira, R. Oliveira. (2017) Stock market’s price movement prediction with LSTM neural networks, International Joint Conference on Neutral Works (IJCNN), pp.1419-1426_**")
+    st.markdown("**_M. Adil, H. Mhamed. (2020) Stock Market Prediction Using LSTM Recurrent Neural Network, Procedia Computer Science, Vol.170, p.1168-1173_**")
+    st.markdown("**_D. Duemig. (2019) Predicting stock prices with LSTM Networks, CS230, Stanford University, California_**")
     st.markdown("***")
-    st.write("""
-    # **Pre-trade Analysis**""")
+
+    st.subheader("Deliverables")
+    st.write("Inspired by the above papers, this project aims to strengthen techniques from the LSTM machine learning model using Standard & Poor's 500 (S&P 500) stocks as reference.  In addition to predicting S&P 500 stock price movements based on historical stock price data, the result would be visualized on a web dashboard stock screening platform.")
+    st.markdown("**1. Enhanced experiment design**")
+    st.write("Explore a method to develop an enhanced experiment design by improving the model with pre-processing data which would obtain a more accurate trained algorithm and maximize the prediction accuracy.")
+    st.markdown("**2. Multiple factors and non-technical feature analysis**")
+    st.write("Build a hybrid analyser by inputting non-technical features and multiple factors that impact stock performance, to investigate and guide future work in determining model architectures and features sets.")
+    st.markdown("***")    
+    
+    st.subheader("Pre-trade Analysis")
     st.write("Our Pre-trade analysis covers six important aspects:")    
     st.write("1.**(Macroeconomics)** Major economic events/ development")
     st.write("2.**(Market)** S&P 500 market analysis")
@@ -140,15 +148,15 @@ def app():
     st.write("6.**(Analysts/KOLs)** Analyst ratings/ Insiders trading")
     st.markdown("***")
     # ## Econ calender
-    st.write("**Economic Calender: **")
+    st.subheader("Economic Calender:")
     st.table(econ_events())
     st.markdown("***")
-    st.write("**World Indexes Correlation Matrix: **")
+    st.subheader("World Indexes Correlation Matrix:")
     image2 = Image.open('corr.png')
     st.image(image2)
 
     st.markdown("***")
-    st.write("**S&P 500 K-means clustering:**")
+    st.subheader("S&P 500 K-means clustering:")
     image3 = Image.open('cluster.png')
     st.image(image3)    
     st.dataframe(cluster())
