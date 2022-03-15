@@ -405,8 +405,7 @@ def app():
     stock_report(symbol)
     # ## Stock report
 
-    st.write(f"""
-    # **{symbol} Stock Report**""")
+    st.write(f"""**{symbol} Stock Report**""")
     
     #st.header(symbol + " Stock Report")
 
