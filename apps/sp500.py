@@ -32,18 +32,21 @@ def user_input_features():
 
 
 def get_symbol(symbol):
-    stock = finvizfinance(symbol)
-    company_name = stock.ticker_fundament()
-    com = list(company_name.values())[0]
-    
-    return com
-    #url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={}&region=1&lang=en".format(symbol)
+    try:
+        stock = finvizfinance(symbol)
+        company_name = stock.ticker_fundament()
+        com = list(company_name.values())[0]
+        
+        return com
+        #url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={}&region=1&lang=en".format(symbol)
 
-    #result = requests.get(url).json()
-    #for x in result['ResultSet']['Result']:
-        #if x['symbol'] == symbol:
-            #return x['name']
-
+        #result = requests.get(url).json()
+        #for x in result['ResultSet']['Result']:
+            #if x['symbol'] == symbol:
+                #return x['name']
+    except Exception as e:
+        return e
+        
 
 def get_fundamentals(symbol):
     try:
@@ -191,7 +194,6 @@ def news_sentiment(symbol):
         # dataframe = dataframe.drop(columns = ['Headline'])
         # print ('\n')
         # print (dataframe.head())
-        
         mean = round(dataframe['compound'].mean(), 2)
         values.append(mean)
         
@@ -200,13 +202,6 @@ def news_sentiment(symbol):
     # df = df.sort_values('Mean Sentiment', ascending=False)
 
     return dataframe
-
-
-  
-    
-    # print ('\n')
-    # print (df)
-
 
 
 def get_insider(symbol):
@@ -229,59 +224,6 @@ def get_insider(symbol):
         return e
 
 
-def get_analyst_price_targets(symbol):
-
-    try:
-        #symbol, start, end = user_input_features()
-
-        url2 = ("http://finviz.com/quote.ashx?t=" + symbol.lower())
-        req = Request(url2, headers={'User-Agent': 'Mozilla/5.0'})
-        webpage = urlopen(req).read()
-        html = soup(webpage, "html.parser")
-        soup1 = soup(str(html), "html.parser")
-        table = soup1.find('table', attrs={'class':'fullview-ratings-outer'})
-        table_rows = table.find_all('tr')
-
-        res = []
-        for tr in table_rows:
-            td = tr.find_all('td')
-            row = [tr.text for tr in td] 
-            res.append(row)
-        new_list = [x for x in res if len(x)==5]
-
-        analyst = pd.DataFrame(new_list, columns=["Date", "Level", "Analyst", "View", "Predition"])
-        
-        return analyst
-        
-        
-    except Exception as e:
-        return e
-
-
-def get_google_trends(symbol):
-    # set US timezone
-    pytrends = TrendReq(hl = 'en-US', tz = 360)
-
-    pytrends.trending_searches(pn = 'united_states')
-
-    # kw_list  keyworld list 
-    kw_list = [symbol + ' stock']
-
-    # 然後就可以透過 build_payload 建立查詢作業，再用 interest_over_time() 呈現數據
-    # 其中的　timeframe 參數很重要！它會改變你的數據格式
-    #  填入 'all' 就是全期資料，資料會以月頻率更新；
-    #  填入 'today 5-y' 就是至今的五年，只能設定 5 年，資料會以週頻率更新；
-    #  填入 'today 3-m' 就是至今的三個月，只能設定 1,2,3 月，資料會以日頻率更新；
-    #  填入 'now 7-d' 就是至今的七天，只能設定 1,7 天，資料會以小時頻率更新；
-    #  填入 'now 1-H' 就是至今的一小時，只能設定 1,4 小時，資料會以每分鐘頻率更新；
-    #  填入 '2015-01-01 2019-01-01' 就是 2015 年初至 2019 年初
-    pytrends.build_payload(kw_list, timeframe = 'today 3-m')
-    pytrends.interest_over_time()
-
-    trend_data=pytrends.interest_over_time()
-    return trend_data
-
-
 def stock_report(symbol):
     import quantstats as qs
 
@@ -294,36 +236,23 @@ def stock_report(symbol):
     qs.reports.html(stock, "SPY", output="report.html")
 
 
-    
-
-
-
-
-
-
 def app():
 
     
     st.write("""
     # S&P 500 Stock Analyzer
-    Shown below are the **Fundamentals**, **News Sentiment**, **Bollinger Bands**, **Analyst Ratings**, **Google Search Trends** and **Comprehensive Report (Compared with SPY as a whole as benchmark)** of your selected stock!
+    Shown below are the **Fundamentals**, **News Sentiment**, **Bollinger Bands** and **Comprehensive Report (Compared with SPY as a whole as benchmark)** of your selected stock!
        
     """)
-
-
-    
+    st.markdown("***")
     st.sidebar.header('User Input Parameters')
-    
-    # symbol, start, end = user_input_features()
-    # start = pd.to_datetime(start)
-    # end = pd.to_datetime(end)
 
     symbol, start, end = user_input_features()
     start = pd.to_datetime(start)
     end = pd.to_datetime(end)
     symbol1 = get_symbol(symbol.upper())
         
-    st.header(f"""** {symbol1} **""")
+    st.subheader(symbol1)
 
     stock = finvizfinance(symbol.lower())
     stock_chart = stock.ticker_charts()
@@ -340,7 +269,7 @@ def app():
     data['EMA'] = talib.EMA(data['Adj Close'], timeperiod = 20)
 
     # Plot
-    st.header(f"""
+    st.subheader(f"""
               Simple Moving Average vs. Exponential Moving Average\n {symbol}
               """)
     st.line_chart(data[['Adj Close','SMA','EMA']])
@@ -349,7 +278,7 @@ def app():
     data['upper_band'], data['middle_band'], data['lower_band'] = talib.BBANDS(data['Adj Close'], timeperiod =20)
 
     # Plot
-    st.header(f"""
+    st.subheader(f"""
               Bollinger Bands\n {symbol}
               """)
     st.line_chart(data[['Adj Close','upper_band','middle_band','lower_band']])
@@ -359,7 +288,7 @@ def app():
     data['macd'], data['macdsignal'], data['macdhist'] = talib.MACD(data['Adj Close'], fastperiod=12, slowperiod=26, signalperiod=9)
 
     # Plot
-    st.header(f"""
+    st.subheader(f"""
               Moving Average Convergence Divergence\n {symbol}
               """)
     st.line_chart(data[['macd','macdsignal']])
@@ -369,43 +298,34 @@ def app():
     data['RSI'] = talib.RSI(data['Adj Close'], timeperiod=14)
 
     # Plot
-    st.header(f"""
+    st.subheader(f"""
               Relative Strength Index\n {symbol}
               """)
     st.line_chart(data['RSI'])
 
+    st.markdown("***")
 
-    st.write("""
-    # **Fundamentals, News, Insider Trades**""")
-    st.write("**Fundamental Ratios: **")
+    st.subheader("Fundamentals: ")
     st.dataframe(get_fundamentals(symbol))
+    st.markdown("***")   
 
     # ## Latest News
-    st.write("**Latest News: **")
+    st.subheader("Latest News: ")
     st.table(get_news(symbol).head(5))
-
-    # ## News Sentiment Analysis
-    st.write("**News Sentiment Analysis: **")
-    st.table(news_sentiment(symbol).head(5))
+    st.markdown("***") 
 
     # ## Recent Insider Trades
-    st.write("**Recent Insider Trades: **")
+    st.subheader("Recent Insider Trades: ")
     st.table(get_insider(symbol).head(5))
-
-    # ## Analyst Ratings
-    st.write("**Analyst Ratings: **")
-    st.table(get_analyst_price_targets(symbol))
-    
-    # # ## Past 3 months Google Search Trends
-    # st.write("**Google Search Trends: **")
-    # st.line_chart(get_google_trends(symbol))    
+    st.markdown("***") 
 
     st.write("Generating comprehensive stock report...")
     st.write("**please wait for some time... **")
+    st.write("This section will compare the historical performance of your selected stock with SPDR S&P 500 Trust ETF (Ticker: SPY) as benchmark.")
     stock_report(symbol)
     # ## Stock report
 
-    st.write(f"""**{symbol} Stock Report**""")
+    st.subheader(f"""**{symbol} Stock Report**""")
     
     #st.header(symbol + " Stock Report")
 

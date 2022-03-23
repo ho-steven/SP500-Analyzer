@@ -11,3 +11,5 @@ nltk
 pandas-datareader
 sklearn
 finvizfinance
+tensorflow
+investpy
