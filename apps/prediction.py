@@ -354,7 +354,7 @@ def lstm(symbol, start_date, end_date):
     predicted_Price = DataScaler.inverse_transform(predicted_Price)
     #final_predit = np.savetxt(sys.stdout, predicted_Price, fmt="%.3f")
     final_predit = "".join(str(x) for x in predicted_Price)
-    st.write("The next day predition for our LSTM Model is: ", final_predit)
+    st.write("The next day price prediction for our LSTM Model is: ", final_predit)
 
 
 def app():
