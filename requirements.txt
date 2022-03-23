@@ -11,5 +11,5 @@ nltk
 pandas-datareader
 sklearn
 finvizfinance
-tensorflow
+tensorflow-cpu
 investpy
