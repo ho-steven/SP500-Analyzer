@@ -1,13 +1,13 @@
 indicator,signal,value
-RSI(14),buy,57.289
-"STOCH(9,6)",buy,62.988
+RSI(14),buy,65.701
+"STOCH(9,6)",overbought,82.723
 STOCHRSI(14),overbought,100.0
-"MACD(12,26)",sell,-1.06
-ADX(14),buy,33.916
-Williams %R,overbought,-2.694
-CCI(14),buy,133.2954
-ATR(14),less_volatility,4.9614
-Highs/Lows(14),buy,6.2843
-Ultimate Oscillator,buy,65.906
-ROC,buy,1.393
-Bull/Bear Power(13),buy,10.07
+"MACD(12,26)",buy,2.8
+ADX(14),buy,42.717
+Williams %R,overbought,-3.786
+CCI(14),buy,127.6997
+ATR(14),less_volatility,4.3375
+Highs/Lows(14),buy,10.8614
+Ultimate Oscillator,overbought,70.979
+ROC,buy,8.647
+Bull/Bear Power(13),buy,16.58

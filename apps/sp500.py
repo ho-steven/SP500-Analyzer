@@ -250,9 +250,9 @@ def app():
     symbol, start, end = user_input_features()
     start = pd.to_datetime(start)
     end = pd.to_datetime(end)
-    symbol1 = get_symbol(symbol.upper())
+    #symbol1 = get_symbol(symbol.upper())
         
-    st.subheader(symbol1)
+    #st.subheader(symbol1)
 
     stock = finvizfinance(symbol.lower())
     stock_chart = stock.ticker_charts()
